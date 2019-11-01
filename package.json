@@ -1,0 +1,29 @@
+{
+  "name": "chain-encryption",
+  "version": "0.9.0",
+  "description": "Encryption module that quickly encrypts and decrypts string using a chain of pre-defined encryptions.  Suitable for quickly encrypt and decrypt secrets.  ",
+  "main": "src/main.js",
+  "keywords": [
+    "Base64",
+    "ArrayBuffer",
+    "6bits",
+    "8bits"
+  ],
+  "homepage": "https://github.com/Randy341/chain-encryption",
+  "author": {
+    "name": "Randy Chang",
+    "url": "https://www.randy-chang.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Randy341/chain-encryption"
+  },
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "one-time-pad-es6": "^0.9.0"
+  }
+}
