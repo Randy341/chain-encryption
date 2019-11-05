@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": true,
+    "module": "commonjs", //commonjs for node, es6 for react
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "removeComments": true,
+    "sourceMap": false,
+    "strictNullChecks": false,
+    "target": "es6"
+  },
+  "compileOnSave": true
+}

@@ -1,7 +1,7 @@
 const CryptoJS = require("crypto-js");
 const OneTimePad = require("one-time-pad-es6");
 
-class CryptoJSWrapper {
+class CryptoJSWrap {
     static async rabbit_encrypt(plaintext, secret, cfg=null) {
         return CryptoJS.Rabbit.encrypt(plaintext, secret, cfg).toString();
     }
@@ -138,6 +138,7 @@ const EncryptionModuleFactory = () => {
             );
         },
         exportEncryptionChain: async () => {
+            /*
             return JSON.stringify(encryptionChain.map(encryption => {
                 //strip key for export
                 encryption["primaryKey"] = null;
@@ -146,6 +147,8 @@ const EncryptionModuleFactory = () => {
                 encryption["step"] = null;
                 return encryption;
             }));
+            */
+            return JSON.stringify(encryptionChain);
         },
         importEncryptionChain: async (json_data) => {
             encryptionChain = JSON.parse(json_data);
@@ -154,5 +157,6 @@ const EncryptionModuleFactory = () => {
     };
 };
 
-module.exports = EncryptionModuleFactory;
+//module.exports = EncryptionModuleFactory;
+exports.EncryptionModuleFactory = EncryptionModuleFactory;
 

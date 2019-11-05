@@ -4,10 +4,8 @@
   "description": "Encryption module that quickly encrypts and decrypts string using a chain of pre-defined encryptions.  Suitable for quickly encrypt and decrypt secrets.  ",
   "main": "src/main.js",
   "keywords": [
-    "Base64",
-    "ArrayBuffer",
-    "6bits",
-    "8bits"
+    "Encryption",
+    "Encryptions"
   ],
   "homepage": "https://github.com/Randy341/chain-encryption",
   "author": {

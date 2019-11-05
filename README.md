@@ -1,29 +1,111 @@
-## Array Buffer to Base64 Encoding [![Build Status](https://travis-ci.com/Randy341/arrayBuffer2Base64.svg?branch=master)](https://travis-ci.com/Randy341/arrayBuffer2Base64)
-JavaScript Library to convert Array Buffer to Base64 encoded string and vice versa.  This library is an useful add-on for cryptographic project, network project, and more.  
-There is no dependency for this project, and it works in both Node and Browser environment.  
+##  Chain Encryption Module 
+An easy-to-use library that encrypts string by applying different encryption in sequence
+Decryption is done by applying decryption with the same sequence in reverse.  
+Currently supported encryptions and their dependencies:
+* AES (Crypto-JS)
+* DES (Crypto-JS)
+* Rabbit (Crypto-JS)
+* One-Time-Pad (one-time-pad-es6)
+
+Current version supports TypeScript
 
 ## Node.js (Install)  
 Requirements:
 - Node.js (version 8 or above.  Need ES6 async/await and typed array)
 - NPM
 ```bash
-npm install ab2b64
+npm install chain-encryption
 ````
 
-## Usage
+## Usage (JavaScript)
 ```javascript
-    const ab2b64 = require("ab2b64");
-    //Converting Array Buffer to Base64 String - Synchronous method
-    let Base64String = ab2b64.ab2b64(buffer);
+    const encryptionFactory = require("../").EncryptionModuleFactory;
+    const assert = require('assert');
     
-    //Converting Base64 String to Array Buffer - Synchronous method
-    let buffer = ab2b64.b642ab(Base64String);
-    
-    //Converting Array Buffer to Base64 String - Asynchronous method
-    let Base64String = await ab2b64.ab2b64Async(buffer);
+    const main = async () => {
         
-    //Converting Base64 String to Array Buffer - Asynchronous method
-    let buffer = await ab2b64.b642abAsync(Base64String);
+        //This is the key for one-time-pad.  Preferably cryptographically random string
+        //Search on NPM for crypto-random-string for generating secure one-time-pad key
+        //NOTE: One-time-pad key has to be at least as long as the plaintext itself!
+        // One-time-pad key has to be even longer if offset and step are applied.
+        // OTP_key.length >= plaintext.length * step + offset
+        const otp_key = `I'm sorry, Morty. It's a bummer. In reality, you're as dumb as they come. 
+        And I needed those seeds real bad and I have to give 'em up just to get your parents off my back! 
+        So now we're gonna have to go get more! And then we're gonna go on even more adventures after that, 
+        Morty! And you're gonna keep your mouth shut about it, Morty! 
+        Because the world is full of idiots that don't understand what's important, 
+        and they'll tear us apart, Morty! But if you stick with me, I'm gonna accomplish great things, Morty, 
+        and you're gonna be part of 'em! And together we're gonna run around, Morty, 
+        we're gonna- do all of kinds of wonderful things, Morty. Just you and me, Morty.`;
+    
+        //generate encryption module
+        const encryptionModule = encryptionFactory();
+
+        /*
+            Add encryptions one-by-one.
+            
+            Encryptions can also be import/export using the following functions:
+            encryptionModule.exportEncryptionChain(): Promise<string>;   
+            encryptionModule.importEncryptionChain(json_data: string): void;
+            
+            The import/export function uses json representation of the array holding encryption data, including the keys!!!
+            So, use import/export function with security caution! 
+        */
+        encryptionModule.addEncryption("0", "Rabbit", "secret987");
+        encryptionModule.addEncryption("1","AES","secret123");
+        encryptionModule.addEncryption("2", "DES", "secret456");
+        encryptionModule.addEncryption("3","OneTimePad",otp_key,"AES", "key123", offset=10, step=3);
+    
+        //Apply the encryption chain and encrypt the string.
+        const ciphertext = await encryptionModule.runEncrypt("The Citadel of Ricks. It's the secret headquarters for the Council of Ricks");
+        
+        //Apply decrypt in reverse of the encryption chain and decrypt the ciphertext
+        const plaintext = await encryptionModule.runDecrypt(ciphertext);
+        
+        assert(plaintext === "The Citadel of Ricks. It's the secret headquarters for the Council of Ricks");
+    
+    };
+    
+    main().then(() => {
+        console.log("All tests pass!");
+    }).catch(err => {
+        console.log(err);
+    });
+```
+
+## Usage (TypeScript)
+```typescript
+    import { EncryptionModuleFactory, EncryptionModule } from ".";
+    
+    const main = async ():Promise<void> => {
+        let EM: EncryptionModule = EncryptionModuleFactory();
+    
+        let one_time_pad_key: string = `I'm sorry, Morty. It's a bummer. In reality, you're as dumb as they come. 
+        And I needed those seeds real bad and I have to give 'em up just to get your parents off my back! 
+        So now we're gonna have to go get more! And then we're gonna go on even more adventures after that, 
+        Morty! And you're gonna keep your mouth shut about it, Morty! 
+        Because the world is full of idiots that don't understand what's important, 
+        and they'll tear us apart, Morty! But if you stick with me, I'm gonna accomplish great things, Morty, 
+        and you're gonna be part of 'em! And together we're gonna run around, Morty, 
+        we're gonna- do all of kinds of wonderful things, Morty. Just you and me, Morty.`;
+    
+        EM.addEncryption("AES", EM.encryption.AES, "secret123");
+        EM.addEncryption("DES", EM.encryption.DES, "secret456");
+        EM.addEncryption("OTP", EM.encryption.OneTimePad, one_time_pad_key, null, null, 10, 2);
+        EM.addEncryption("Rabbit", EM.encryption.Rabbit, "secret789");
+    
+        const ciphertext: string = await EM.runEncrypt("Secret Location of the Citadel of Ricks");
+        console.log(`Encrypted Ciphertext: ${ciphertext}`);
+        const plaintext: string = await EM.runDecrypt(ciphertext);
+        console.log(`Decrypted Plaintext: ${plaintext}`);
+    
+    };
+    
+    main().then(() => {
+        console.log("Test pass!");
+    }).catch(err => {
+        console.log(err);
+    });
 ```
 
 ## Q&A
@@ -32,10 +114,6 @@ A: Specifically, this library requires async/await and typed array feature from 
 these two will suffice.  Async/await is much less important as it only served as wrapper for 
 async call.  You can fork your own on github and rewrite the async/await portion.  
 However, the typed array feature is a must as typed array is used heavily.  
-
-#### Q: Why not just use the Base64 conversion feature in more established library, like Crypto-JS?
-A: As of the writing of this library, I can't find one on NPM that converts Array Buffer to Base64.  Crypto-JS 
-converts specialized 'Word Array', not Array Buffer.
 
 #### Q: Your library is garbage!  I don't like it!
 A: Then you open PR and improve it! Or don't use it! Nobody is begging you here...   
