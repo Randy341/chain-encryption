@@ -1,4 +1,4 @@
-##  Chain Encryption Module 
+##  Chain Encryption Module [![Build Status](https://travis-ci.com/Randy341/chain-encryption.svg?branch=master)](https://travis-ci.com/Randy341/chain-encryption)
 An easy-to-use library that encrypts string by applying different encryption in sequence
 Decryption is done by applying decryption with the same sequence in reverse.  
 Currently supported encryptions and their dependencies:
